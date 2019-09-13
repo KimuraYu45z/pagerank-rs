@@ -9,7 +9,7 @@ pub fn get_stochastic_matrix(link_matrix: &Matrix) -> Matrix {
   for (src, vector) in link_matrix {
     let mut sum = 0f64;
     for (_, value) in vector {
-      sum += value;
+      sum += *value;
     }
 
     let mut v = Vector::new();
@@ -51,7 +51,7 @@ fn test_pagerank() {
       }
       let surplus5 = (i + j + 1) as f64 % 5f64;
 
-      vector.insert(j.to_string(), surplus3 / surplus5);
+      vector.insert(j.to_string(), (surplus3 + 1f64) / (surplus5 + 1f64));
     }
     link_matrix.insert(i.to_string(), vector);
   }
@@ -69,7 +69,10 @@ fn test_pagerank() {
     score_vector = transition_score(&stochastic_matrix, &score_vector);
   }
 
+  let mut sum = 0f64;
   for i in 0..SIZE {
     println!("{}", score_vector[&i.to_string()]);
+    sum += score_vector[&i.to_string()];
   }
+  println!("{}", sum);
 }
