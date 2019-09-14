@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-pub type Matrix = HashMap<String, Vector>;
 pub type Vector = HashMap<String, f64>;
+pub type Matrix = HashMap<String, Vector>;
 
 pub fn get_stochastic_matrix(link_matrix: &Matrix) -> Matrix {
   let mut stochastic_matrix = Matrix::new();
@@ -23,7 +23,7 @@ pub fn get_stochastic_matrix(link_matrix: &Matrix) -> Matrix {
   return stochastic_matrix;
 }
 
-pub fn transition_score(stochastic_matrix: &Matrix, current_score_vector: &Vector) -> Vector {
+pub fn transition_score(current_score_vector: &Vector, stochastic_matrix: &Matrix) -> Vector {
   let mut score = Vector::new();
 
   for (src, vector) in stochastic_matrix {
@@ -39,6 +39,12 @@ pub fn transition_score(stochastic_matrix: &Matrix, current_score_vector: &Vecto
 
 #[test]
 fn test_pagerank() {
+  let mut score_vector = Vector::new();
+  const DEFAULT: f64 = 1f64 / SIZE as f64;
+  for i in 0..SIZE {
+    score_vector.insert(i.to_string(), DEFAULT);
+  }
+
   let mut link_matrix = Matrix::new();
   const SIZE: i32 = 10;
   for i in 0..SIZE {
@@ -58,15 +64,9 @@ fn test_pagerank() {
 
   let stochastic_matrix = get_stochastic_matrix(&link_matrix);
 
-  let mut score_vector = Vector::new();
-  const DEFAULT: f64 = 1f64 / SIZE as f64;
-  for i in 0..SIZE {
-    score_vector.insert(i.to_string(), DEFAULT);
-  }
-
   const PRECISION: i32 = 6;
   for _ in 0..PRECISION {
-    score_vector = transition_score(&stochastic_matrix, &score_vector);
+    score_vector = transition_score(&score_vector, &stochastic_matrix);
   }
 
   let mut sum = 0f64;
